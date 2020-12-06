@@ -16,6 +16,7 @@ public class vector {
     boolean r2;
     boolean r3;
     boolean r4;
+    
     public vector(int sizem, int sizeb, int ajb, int bjb){
         sizebm = (int) Math.pow(2, sizem); // obtenemos valor maximo del binario para la variable "m"
         while(true){

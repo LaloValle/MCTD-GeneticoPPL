@@ -2,11 +2,14 @@ import java.util.ArrayList;
 
 public class PPL {
     private FuncionObjetivo FO;
+    private ArrayList<Character> variables;
     private ArrayList<Double[]> restricciones;
-    private int minmax;
+    private int minmax; // Minimización o maximización
 
     static final int LINEAL = 1;
     static final int GAUSIANA = 2;
+    static final int MINIMIZACION = -1;
+    static final int MAXIMIZACION = 1;
 
     /**
      * Constructor del PPL
@@ -17,8 +20,21 @@ public class PPL {
         FO = new FuncionObjetivo(funcionObjetivo);
 
         restricciones = new ArrayList<Double[]>();
+        variables = new ArrayList<Character>();
 
         minmax = MinMax;
+    }
+
+    public ArrayList<Character> getVariables(){
+        return variables;
+    }
+
+    public int getNumeroVariables(){
+        return variables.size();
+    }
+
+    public int minmax(){
+        return minmax;
     }
 
     /**
@@ -29,7 +45,9 @@ public class PPL {
      * @param limiteMenor
      * @return agregada
      */
-    public void agregarRestriccion(double limiteMenor, double limiteMayor){
+    public void agregarRestriccion(char variable,double limiteMenor, double limiteMayor){
+        variables.add(variable);
+        
         Double restriccion[] = {
             limiteMenor,
             limiteMayor
@@ -44,7 +62,9 @@ public class PPL {
      * @param limite
      * @return
      */
-    public void agregarRestriccion(double limite){
+    public void agregarRestriccion(char variable,double limite){
+        variables.add(variable);
+
         Double restriccion[] = {
             limite,
             limite
@@ -61,7 +81,7 @@ public class PPL {
      * @return Z: valor de la F.O.
      */
     public double Z(double m,double b){
-        return minmax * FO.funcionObjetivo(m,b);
+        return FO.funcionObjetivo(m,b);
     }
 
     /**
@@ -110,14 +130,14 @@ class FuncionObjetivo {
     }
 
     public static double ecuacionGausiana(double x,double m,double k){
-        return Math.exp(-1*k*Math.sqrt(x-m));
+        return Math.exp((-1*k)*Math.pow((x-m),2));
     }
 
     public double funcionObjetivo(double m,double b){
         double suma = 0.0;
         for(Double[] pares:LogicaAjustePuntos.logica().getPuntos()){
             suma += Math.abs(
-                ((funcion == PPL.LINEAL)? ecuacionPuntoPendiente(pares[0],m,b) : ecuacionGausiana(pares[0],b,m) )//f(x0)
+                ((funcion == PPL.LINEAL)? ecuacionPuntoPendiente(pares[0],m,b) : ecuacionGausiana(pares[0],m,b) )//f(x0)
                 - pares[1] //y0
             );
         }

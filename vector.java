@@ -234,10 +234,10 @@ public class vector implements Comparable<vector>{
     @Override
     public int compareTo(vector t) { // metodo para acomodar un arreglo de vectores de mayor a menor
        if(repetido < t.getRepetido()){
-           return 1;
+           return -1;
        }
        if(repetido > t.getRepetido()){
-           return -1;
+           return 1;
        }
        return 0;
     }

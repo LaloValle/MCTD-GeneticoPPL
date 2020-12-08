@@ -84,20 +84,27 @@ public class AjustePuntos {
 		/*
 			Configuración de los problemas y sus restricciones
         */
-        PPL PPLineal = new PPL(PPL.LINEAL,-1);
-        PPLineal.agregarRestriccion(-100,100); // m
-		PPLineal.agregarRestriccion(-1*logica.limiteTerminoIndependiente(),logica.limiteTerminoIndependiente()); // b
-
-		PPL PPLGausiano = new PPL(PPL.GAUSIANA,-1);
-		PPLGausiano.agregarRestriccion(0,5); // k
-		PPLGausiano.agregarRestriccion(logica.abcisaDeOrdenadaMayor()); // m
-
+        PPL PPLineal = new PPL(PPL.LINEAL,PPL.MINIMIZACION);
+        PPLineal.agregarRestriccion('m',-100,100); // m
+		PPLineal.agregarRestriccion('b',-1*logica.limiteTerminoIndependiente(),logica.limiteTerminoIndependiente()); // b
+		
+		PPL PPLGausiano = new PPL(PPL.GAUSIANA,PPL.MINIMIZACION);
+		PPLGausiano.agregarRestriccion('m',logica.abcisaDeOrdenadaMayor()); // m
+		PPLGausiano.agregarRestriccion('k',0,5); // k
+		
+		System.out.printf("Z:%g\n",PPLineal.Z(0.0,0.0));
 		System.out.printf("ajm %g , bjm %g , ajb %g , bjb %g\n",PPLineal.limiteInferiorR(1),PPLineal.limiteSuperiorR(1),PPLineal.limiteInferiorR(2),PPLineal.limiteSuperiorR(2));
 		System.out.printf("ajm %g , bjm %g , ajb %g , bjb %g\n",PPLGausiano.limiteInferiorR(1),PPLGausiano.limiteSuperiorR(1),PPLGausiano.limiteInferiorR(2),PPLGausiano.limiteSuperiorR(2));
 
-        algoritmoGenetico genetico = new algoritmoGenetico(iteraciones, individuos, poblaciones, precision, PPLineal.limiteInferiorR(2),PPLineal.limiteSuperiorR(2),2,PPLineal);
+        /* algoritmoGenetico genetico = new algoritmoGenetico(iteraciones, individuos, poblaciones, precision, PPLineal.limiteInferiorR(2),PPLineal.limiteSuperiorR(2),2,PPLineal);
 		genetico.startAlgoritmo();
-		vector mejorVector = genetico.mejorVector();
+		vector mejorVector = genetico.mejorVector(); */
+
+		TempladoSimulado templadoLineal = new TempladoSimulado(PPLineal);
+		Estado estadoFinalLineal = templadoLineal.templadoSimulado();
+
+		TempladoSimulado templadoGausiano = new TempladoSimulado(PPLGausiano);
+		Estado estadoFinalGausiano = templadoGausiano.templadoSimulado();
 
 		/**
 		 * Graficación de los puntos y el ajuste lineal y gausiano
@@ -115,7 +122,7 @@ public class AjustePuntos {
 		for(Double[] par: logica.getPuntos()){
 			indiceColeccion = grafica.agregarParOrdenado(
 				"Lineal", 
-				par[0],FuncionObjetivo.ecuacionPuntoPendiente(par[0],mejorVector.getM(),mejorVector.getB()),
+				par[0],FuncionObjetivo.ecuacionPuntoPendiente(par[0],estadoFinalLineal.getSolucion(0),estadoFinalLineal.getSolucion(1)),
 				indiceColeccion);
 		}
 
@@ -140,7 +147,7 @@ public class AjustePuntos {
 		for(Double[] par: logica.getPuntos()){
 			indiceColeccion = grafica.agregarParOrdenado(
 				"Lineal", 
-				par[0]+1,par[1]+1, 
+				par[0], FuncionObjetivo.ecuacionGausiana(par[0],estadoFinalGausiano.getSolucion(0),estadoFinalGausiano.getSolucion(1)),
 				indiceColeccion);
 		}
 
@@ -209,5 +216,15 @@ class LogicaAjustePuntos{
 				indiceMayor = i;
 		}
 		return paresOrdenados.get(indiceMayor)[0];
+	}
+
+	public double abcisaMayor(){
+		int indiceMayor = 0;
+		for(int i=0;i< paresOrdenados.size();i++){
+			if(paresOrdenados.get(i)[0]>paresOrdenados.get(indiceMayor)[0])
+				indiceMayor = i;
+		}
+		return paresOrdenados.get(indiceMayor)[0];
+
 	}
 }

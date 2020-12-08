@@ -79,13 +79,15 @@ public class algoritmoGenetico {
                    }
                }
             }
+            mejores = tamañoPoblacion-mejores;
             vector[] mejoresvectores = new vector[mejores];//guardamos un array del tamaño de los vectores que avanzaran
             int indice = 0;//indice para ver en que vector va del array anterior
+            vectores = vectores[0].acomoda(vectores);
             for(int i = 0; i < tamañoPoblacion; i++){
-              if(vectores[i].getRepetido() > 0){ //evaluamos si algun aleatorio entro en el rango del vector
+              if(vectores[i].getRepetido() == 0){ //evaluamos si algun aleatorio entro en el rango del vector
                   mejoresvectores[indice] = vectores[i]; // guardamos el vector
                   indice ++;//aumentamos el contador
-              }               
+              }else break;               
             }
             mejoresvectores = mejoresvectores[0].acomoda(mejoresvectores);//ejecutamos el metodo para acomodar el array de vectores
             ztot = 0;
@@ -168,13 +170,15 @@ public class algoritmoGenetico {
                }
            }
         }
+        mejores = tamañoPoblacion-mejores;
         vector[] mejoresvectores = new vector[mejores];//guardamos un array del tamaño de los vectores que avanzaran
         int indice = 0;//indice para ver en que vector va del array anterior
+        vectores = vectores[0].acomoda(vectores);
         for(int i = 0; i < tamañoPoblacion; i++){
-          if(vectores[i].getRepetido() > 0){ //evaluamos si algun aleatorio entro en el rango del vector
-              mejoresvectores[indice] = vectores[i]; // guardamos el vector
-              indice ++;//aumentamos el contador
-          }               
+            if(vectores[i].getRepetido() == 0){ //evaluamos si algun aleatorio entro en el rango del vector
+                mejoresvectores[indice] = vectores[i]; // guardamos el vector
+                indice ++;//aumentamos el contador
+            }else break;               
         }
         mejoresvectores = mejoresvectores[0].acomoda(mejoresvectores);//ejecutamos el metodo para acomodar el array de vectores
         double cambio = mejorVectorAnterior.getZ() - mejoresvectores[0].getZ();
@@ -190,6 +194,18 @@ public class algoritmoGenetico {
         System.out.println("Poblacion: " + idpoblacion);
         imprimeVector(mejoresvectores[0]);
         mejorVectorAnterior = mejoresvectores[0];
+        double alto = mejoresvectores[0].getZ();
+        for(int i=0;i<mejores;i++){
+            if(mejoresvectores[0].getRepetido() == mejoresvectores[i].getRepetido()){
+                if(alto < mejoresvectores[i].getZ()){
+                    alto = mejoresvectores[i].getZ();
+                    mejorVectorAnterior = mejoresvectores[i];
+                }
+            }
+            else break;
+        }
+        /* imprimeVector(mejorVectorAnterior);
+        imprimeVector(mejoresvectores[0]); */
          for(int i = 0; i < mejores; i++){
             if(nvariables == 2){
                 vectores[i] = new vector(mjm, mjb, ppl.limiteInferiorR(2), ppl.limiteSuperiorR(2), idpoblacion, i, mejoresvectores[i].getBinario()); // generamos en la pocisión i un nuveo vector, con los atributos de la lista de mejores vectores para 2 variables
